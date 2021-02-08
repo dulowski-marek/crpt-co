@@ -5,7 +5,8 @@
   "author": "Marek Dulowski <dulowski.marek@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon ./app.ts"
+    "start": "nodemon ./app.ts",
+    "build": "tsc --outDir ./build"
   },
   "dependencies": {
     "body-parser": "^1.19.0",

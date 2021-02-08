@@ -12,6 +12,8 @@ const port = 8080;
 const encryptRepository = new InMemoryEncryptRepository();
 const encryptInteractor = new EncryptInteractor(encryptRepository);
 
+app.use(express.static(`www`));
+
 app.use(expressWinston.logger({
     winstonInstance: log,
 }));
