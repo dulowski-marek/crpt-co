@@ -6,8 +6,80 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Thencryptor</title>
+
+    <script src="https://unpkg.com/node-forge@0.7.0/dist/forge.min.js"></script>
 </head>
 <body>
+    <button onclick="generatePair()">Generate pair</button>
 
+    <a id="link"></a>
+
+    <textarea id="encrypted">
+
+    </textarea>
+    <button onclick="decrypt()">Decrypt!</button>
+    <pre id="decrypted"></pre>
+    <script>
+        const rsa = forge.pki.rsa;
+        let privateKey;
+
+        const encrypted = document.getElementById(`encrypted`);
+        const decrypted = document.getElementById(`decrypted`);
+
+        async function generatePair() {
+            const response = await getKeypair()
+                .then(keypair => {
+                    privateKey = keypair.privateKey;
+
+                    return postEncrypt(keypair.publicKey);
+                });
+
+            const url = `http://localhost:8080/encrypt/${response.id}`;
+
+            const link = document.getElementById(`link`);
+
+            link.href = url;
+            link.innerText = url;
+        }
+
+        function getKeypair() {
+            // return new Promise((resolve, reject) => {
+            //     rsa.generateKeyPair({ bits: 2048, workers: 2 }, (err, keypair) => {
+            //        if (!!err) {
+            //            return reject(err);
+            //        }
+            //
+            //        resolve(keypair);
+            //     });
+            // });
+
+            return crypto.subtle.generateKey(
+                {
+                    name: "RSA-OAEP",
+                    modulusLength: 4096,
+                    publicExponent: new Uint8Array([1, 0, 1]),
+                    hash: "SHA-256"
+                },
+                true,
+                ["encrypt", "decrypt"]
+            );
+        }
+
+        function postEncrypt(publicKey) {
+            return fetch(`/api/v1/encrypt`, {
+                method: 'POST',
+                headers: [['Content-Type', 'application/json']],
+                body: JSON.stringify({
+                    publicKey: forge.pki.publicKeyToPem(publicKey),
+                }),
+            })
+            .then(res => res.json())
+            .catch(err => console.error(err));
+        }
+
+        function decrypt() {
+            decrypted.innerText = privateKey.decrypt(forge.util.decode64(encrypted.value));
+        }
+    </script>
 </body>
 </html>

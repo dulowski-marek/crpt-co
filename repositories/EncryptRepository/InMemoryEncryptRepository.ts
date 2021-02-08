@@ -23,7 +23,7 @@ export class InMemoryEncryptRepository implements EncryptRepository {
 
     get(id: string): EncryptResult {
         const publicKey = this.map.get(id);
-        log.info(Array.from(this.map))
+        log.info(this.map.get(id));
 
         if (publicKey === undefined) {
             throw new Error(`No Encrypt with id ${id}`);

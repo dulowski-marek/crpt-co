@@ -3,6 +3,8 @@ import log from './log';
 import { EncryptInteractor } from './interactors/Encrypt/EncryptInteractor';
 import { InMemoryEncryptRepository } from './repositories/EncryptRepository/InMemoryEncryptRepository';
 import expressWinston from 'express-winston';
+import ejs from 'ejs';
+import fs from 'fs';
 
 import { json } from 'body-parser';
 
@@ -12,7 +14,19 @@ const port = 8080;
 const encryptRepository = new InMemoryEncryptRepository();
 const encryptInteractor = new EncryptInteractor(encryptRepository);
 
-app.use(express.static(`www`));
+const tpl = ejs.compile(fs.readFileSync(`www/encrypt/index.ejs`).toString(`utf8`));
+
+app.use(`/`, express.static(`www`));
+app.use(`/encrypt/:id`, (req, res, next) => {
+    const result = encryptRepository.get(req.params[`id`]);
+
+    log.info(result)
+    log.info(tpl({ publicKey: result.publicKey }))
+
+    res.status(200).write(tpl({ publicKey: result.publicKey }));
+
+    res.end();
+});
 
 app.use(expressWinston.logger({
     winstonInstance: log,

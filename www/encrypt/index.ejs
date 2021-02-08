@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Thencryptor</title>
+    <script src="https://unpkg.com/node-forge@0.7.0/dist/forge.min.js"></script>
+</head>
+    <textarea id="message">
+    </textarea>
+    <button onclick="encrypt()">Encrypt!</button>
+    <textarea id="encrypted"></textarea>
+<body>
+    <script>
+        const publicKey = forge.pki.publicKeyFromPem(`<%- publicKey %>`);
+        const message = document.getElementById(`message`);
+        const encrypted = document.getElementById(`encrypted`);
+
+        function encrypt() {
+            encrypted.value = forge.util.encode64(publicKey.encrypt(message.value));
+        }
+    </script>
+</body>
+</html>
