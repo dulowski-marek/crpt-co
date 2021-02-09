@@ -6,7 +6,8 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Thencryptor</title>
-    <script src="https://unpkg.com/node-forge@0.7.0/dist/forge.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.0.0/jsencrypt.min.js" integrity="sha512-HMX95/J6XsjD6DKbHdow6+1NMu2Tf3Qxv1O5JlmuJVvqkjPKcrQrQ6wOQWkgLcJGJgTc3zqReCVPAMIneZtSOQ==" crossorigin="anonymous"></script>
 </head>
     <textarea id="message">
     </textarea>
@@ -14,12 +15,15 @@
     <textarea id="encrypted"></textarea>
 <body>
     <script>
-        const publicKey = forge.pki.publicKeyFromPem(`<%- publicKey %>`);
+        const publicKey = `<%- publicKey %>`;
         const message = document.getElementById(`message`);
         const encrypted = document.getElementById(`encrypted`);
 
-        function encrypt() {
-            encrypted.value = forge.util.encode64(publicKey.encrypt(message.value));
+        async function encrypt() {
+            const encrypt = new JSEncrypt();
+            encrypt.setPublicKey(publicKey);
+
+            encrypted.value = encrypt.encrypt(message.value);
         }
     </script>
 </body>
